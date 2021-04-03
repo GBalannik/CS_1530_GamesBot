@@ -1,11 +1,14 @@
 from discord.ext import commands
 from dotenv import load_dotenv
 
+#imports
 import discord
+import logging
 import random
 import os
 
 load_dotenv()
+
 client = discord.Client()
 
 @client.event
