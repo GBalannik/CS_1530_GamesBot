@@ -21,7 +21,7 @@ async def on_ready():
 	print("logged in")
 
 @bot.command
-async def roll(ctx, dice: str)
+async def roll(ctx, dice: str):
 	try:
 		rolls, limit = map(int, dice.split('d'))
 	except Exception:
