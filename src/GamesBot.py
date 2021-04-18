@@ -9,14 +9,25 @@ import os
 
 load_dotenv()
 
+intents = discord.Intents.default()
+intents.members = True
+
+bot = commands.Bot(command_prefix='?', description=description, intents=intents)
+
 client = discord.Client()
 
-@client.event
+@bot.event
 async def on_ready():
 	print("logged in")
 
-@client.event
-async def on_message(message):
-	return;
+@bot.command
+async def roll(ctx, dice: str)
+	try:
+		rolls, limit = map(int, dice.split('d'))
+	except Exception:
+		await ctx.send('Must be NdN')
+		return
 
-client.run(os.environ.get('token'))
+
+
+bot.run(os.environ.get('token'))
