@@ -30,4 +30,4 @@ async def roll(ctx, dice: str):
 
 
 
-bot.run(os.environ.get('token'))
+bot.run('token')
