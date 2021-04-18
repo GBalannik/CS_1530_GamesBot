@@ -5,9 +5,8 @@ from dotenv import load_dotenv
 import discord
 import logging
 import random
-import os
 
-load_dotenv()
+import os
 
 client = discord.Client()
 
