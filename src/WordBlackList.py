@@ -1,18 +1,16 @@
 import os
 import discord
+from discord.ext import commands
 import random
 from dotenv import load_dotenv
 
 wordBL = set()
 
-def build_dictionary():
-	file = open("database/wordblacklist.txt", 'r')
-
-	for line in file:
-		line = line.strip()
-		wordBL.add(line)
-
-	file.close()
+def build_wordBL():
+	with open("database/wordblacklist.txt", 'r') as file:
+		for line in file:
+			line = line.strip()
+			wordBL.add(line)
 
 
 def add_or_remove_word(ctx, word):
