@@ -135,10 +135,25 @@ async def start(ctx):
 		
 		#ongoingEvents[theMessage.id]['task'] = bot.loop.create_task(reactionChecker(theMessage.id,theMessage.channel.id,theMessage.server.id,int(cmdsettings[ctx.message.author.id]['time'])))
 		await theMessage.add_reaction(ongoingEvents[theMessage.id]['emoji'])
+		#await reactionChecker(ctx, theMessage, int(cmdSettings[ctx.message.author.id]['time']))
+
+		await asyncio.sleep(int(cmdSettings[ctx.message.author.id]['time']))
+
+		#print(discord.utils.get(bot.cached_messages, id = theMessage.id).reactions)
+		theReaction = discord.utils.get(bot.cached_messages, id = theMessage.id).reactions[0]
+
+		async for user in theReaction.users():
+			if user.id != bot.user.id:
+				await dmUser(user)
+
+		del ongoingEvents[theMessage.id]
 		
 
-
 	
+
+
+async def dmUser(user):
+	await user.send("Your event is starting")	
 
 async def createEmbed(msg, emoji, time, title):
 	embed = discord.Embed(color = 0x3fca1, title = title)
