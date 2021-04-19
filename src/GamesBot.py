@@ -16,7 +16,6 @@ intents = discord.Intents.default()
 intents.members = True
 
 bot = commands.Bot(command_prefix='!', description="Games Group CS_1530 Discord Utility Bot", intents=intents)
-wordBL = set()
 
 @bot.event
 async def on_ready():
@@ -24,32 +23,35 @@ async def on_ready():
 
 @bot.event
 async def on_message(message):
-    text = message.content
-    #text = text.translate(str.maketrans(table))
-    author_id = message.author.id
 
-    if author_id != bot.user.id:
-        isClean = True
-        message_word_list = text.split()
-        for word in message_word_list:
-            if word in wordBL:
-                isClean = False
-                break
-        if not isClean:
-       		await message.author.ban()
-        	await message.channel.send(chide_user(author_id))
+	ctx = await bot.get_context(message)
+	if ctx.valid:
+		await bot.process_commands(message)
+		return
+
+	text = message.content
+	author_id = message.author.id
+
+	for word in text.split():
+		if word in wordBL and message.author.id != bot.user.id:
+			await message.delete()
+			await message.channel.send("Do not say that!")
+
 
 #------------Commands Go Here-----------------
 
 ongoingEvents = {}
 cmdSettings = {}
+wordBL = []
 
 @bot.command()
-async def banword(ctx, word):
-	if ctx.message.author.server_permissions.administrator:
-		add_or_remove_word(ctx, word)
+async def banword(ctx, word: str):
+	if word in wordBL:
+		wordBL.remove(word)
+		await ctx.send("{} removed from banned word list".format(word))
 	else:
-		await ctx.send("Only admins may edit the blacklist.")
+		wordBL.append(word)
+		await ctx.send("{} added to banned word list".format(word))
 
 
 # @author Discord.py API team
@@ -69,7 +71,7 @@ async def flip(ctx):
 	flips = ['heads' , 'tails']
 	await ctx.send(random.choice(flips))
 
-defaultEventErrorMessage = "Example of Server Event:\n !event time 1100\n emoji :watermelon\n"
+defaultEventErrorMessage = "Example of Server Event:\n !event time 1100\n !event emoji :watermelon\n !event start"
 
 # adapted from @author AnimeHasFallen@github.com
 @bot.group(pass_context=True, alisases=["E","e"], brief="This is where all commands are, !help event")
@@ -186,30 +188,6 @@ async def createEmbed(msg, emoji, time, title):
 	embed.add_field(name = 'Event Time', value = time, inline = False)
 
 	return embed
-
-
-async def build_wordBL():
-	with open("database/wordblacklist.txt", 'r') as file:
-		for line in file:
-			line = line.strip()
-			wordBL.add(line)
-
-
-async def add_or_remove_word(ctx, word):
-	if word in wordBL:
-		wordBL.remove(word)
-		file = open("database/wordblacklist.txt", 'w')
-		for item in wordBL:
-			file.write(item)
-		file.close()
-		await ctx.send("{} was removed from the blacklist.".format(word))
-	else:
-		wordBL.add(word)
-		file = open("database/wordblacklist.txt", 'a')
-		file.write(word)
-		file.close()
-		await ctx.send("{} was added to the blacklist.".format(word))
-
 
 async def chide_user(user_id):
     user_id = '<@' + str(user_id) + '>'
