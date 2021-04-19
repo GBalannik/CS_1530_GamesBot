@@ -87,7 +87,7 @@ async def message(ctx, *args):
 #	await ctx.send('Channel set to {}'.format(eventChannel.name))
 
 @event.command(pass_context=True, brief='All in one')
-async def doAll(ctx, theEmoji: str, theTime: int, theChannel: str):
+async def doAll(ctx, theEmoji: str, theTime: int):
 	await emoji.callback(ctx, theEmoji)
 	await time.callback(ctx, theTime)
 #	await channel.callback(ctx, theChannel)
@@ -130,11 +130,11 @@ async def start(ctx):
 		ongoingEvents[theMessage.id]['emoji'] = cmdSettings[ctx.message.author.id]['emoji']
 		ongoingEvents[theMessage.id]['message'] = infomessage
 		ongoingEvents[theMessage.id]['endDate'] = endDate
-		#ongoingGiveaways[theMessage.id]['channel'] = cmdsettings[ctx.message.author.id]['channel']
-		#ongoingGiveaways[theMessage.id]['server'] = theMessage.server.id
+		#ongoingEvents[theMessage.id]['channel'] = cmdsettings[ctx.message.author.id]['channel']
+		#ongoingEvents[theMessage.id]['server'] = theMessage.server.id
 		
-		ongoingEvents[theMessage.id]['task'] = bot.loop.create_task(reactionChecker(theMessage.id,theMessage.channel.id,theMessage.server.id,int(cmdsettings[ctx.message.author.id]['time'])))
-		await bot.add_reaction(theMessage, ongoingEvents[theMessage.id]['emoji'])
+		#ongoingEvents[theMessage.id]['task'] = bot.loop.create_task(reactionChecker(theMessage.id,theMessage.channel.id,theMessage.server.id,int(cmdsettings[ctx.message.author.id]['time'])))
+		await theMessage.add_reaction(ongoingEvents[theMessage.id]['emoji'])
 		
 
 
