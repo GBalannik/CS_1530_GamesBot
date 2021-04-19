@@ -16,17 +16,41 @@ intents = discord.Intents.default()
 intents.members = True
 
 bot = commands.Bot(command_prefix='!', description="Games Group CS_1530 Discord Utility Bot", intents=intents)
+wordBL = set()
 
 @bot.event
 async def on_ready():
 	print("logged in")
 
+@bot.event
+async def on_message(message):
+    text = message.content
+    #text = text.translate(str.maketrans(table))
+    author_id = message.author.id
 
+    if author_id != bot.user.id:
+        isClean = True
+        message_word_list = text.split()
+        for word in message_word_list:
+            if word in wordBL:
+                isClean = False
+                break
+        if not isClean:
+       		await message.author.ban()
+        	await message.channel.send(chide_user(author_id))
 
 #------------Commands Go Here-----------------
 
 ongoingEvents = {}
 cmdSettings = {}
+
+@bot.command()
+async def banword(ctx, word):
+	if ctx.message.author.server_permissions.administrator:
+		add_or_remove_word(ctx, word)
+	else:
+		await ctx.send("Only admins may edit the blacklist.")
+
 
 # @author Discord.py API team
 @bot.command()
@@ -147,13 +171,11 @@ async def start(ctx):
 				await dmUser(user)
 
 		del ongoingEvents[theMessage.id]
-		
-
-	
 
 
 async def dmUser(user):
-	await user.send("Your event is starting")	
+	await user.send("Your event is starting")
+
 
 async def createEmbed(msg, emoji, time, title):
 	embed = discord.Embed(color = 0x3fca1, title = title)
@@ -164,5 +186,46 @@ async def createEmbed(msg, emoji, time, title):
 	embed.add_field(name = 'Event Time', value = time, inline = False)
 
 	return embed
+
+
+async def build_wordBL():
+	with open("database/wordblacklist.txt", 'r') as file:
+		for line in file:
+			line = line.strip()
+			wordBL.add(line)
+
+
+async def add_or_remove_word(ctx, word):
+	if word in wordBL:
+		wordBL.remove(word)
+		file = open("database/wordblacklist.txt", 'w')
+		for item in wordBL:
+			file.write(item)
+		file.close()
+		await ctx.send("{} was removed from the blacklist.".format(word))
+	else:
+		wordBL.add(word)
+		file = open("database/wordblacklist.txt", 'a')
+		file.write(word)
+		file.close()
+		await ctx.send("{} was added to the blacklist.".format(word))
+
+
+async def chide_user(user_id):
+    user_id = '<@' + str(user_id) + '>'
+    responses = [
+        "You kiss your mother with that mouth, {}?",
+        "That's some colorful language, {}.",
+        "Come on now, {}. Did you really need to say that?",
+        "{} - LANGUAGE!",
+        "Hey now {}, watch your mouth.",
+        "We don't use that kind of language here, {}."
+    ]
+
+    choice = random.choice(responses)
+    choice = choice.format(user_id)
+
+    return choice
+
 
 bot.run(os.environ.get('token'))
