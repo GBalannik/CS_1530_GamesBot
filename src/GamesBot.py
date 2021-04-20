@@ -35,7 +35,8 @@ async def on_message(message):
 	for word in text.split():
 		if word in wordBL and message.author.id != bot.user.id:
 			await message.delete()
-			await message.channel.send("Do not say that!")
+			chide = await chide_user(message.author)
+			await message.channel.send(chide)
 
 
 #------------Commands Go Here-----------------
@@ -156,8 +157,6 @@ async def start(ctx):
 		ongoingEvents[theMessage.id]['emoji'] = cmdSettings[ctx.message.author.id]['emoji']
 		ongoingEvents[theMessage.id]['message'] = infomessage
 		ongoingEvents[theMessage.id]['endDate'] = endDate
-		#ongoingEvents[theMessage.id]['channel'] = cmdsettings[ctx.message.author.id]['channel']
-		#ongoingEvents[theMessage.id]['server'] = theMessage.server.id
 		
 		#ongoingEvents[theMessage.id]['task'] = bot.loop.create_task(reactionChecker(theMessage.id,theMessage.channel.id,theMessage.server.id,int(cmdsettings[ctx.message.author.id]['time'])))
 		await theMessage.add_reaction(ongoingEvents[theMessage.id]['emoji'])
@@ -190,7 +189,7 @@ async def createEmbed(msg, emoji, time, title):
 	return embed
 
 async def chide_user(user_id):
-    user_id = '<@' + str(user_id) + '>'
+    #user_id = '<@' + str(user_id) + '>'
     responses = [
         "You kiss your mother with that mouth, {}?",
         "That's some colorful language, {}.",
@@ -201,7 +200,7 @@ async def chide_user(user_id):
     ]
 
     choice = random.choice(responses)
-    choice = choice.format(user_id)
+    choice = choice.format(user_id.mention)
 
     return choice
 
